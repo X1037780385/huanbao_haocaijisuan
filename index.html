@@ -202,17 +202,18 @@
             let timeHeader = getShiftTime();
             let templateText = `${timeHeader}
 一号塔
-SO2:
-NOx:
+二氧化硫:
+氮氧化物:
 烟尘：
 尿素：${m1Urea.toFixed(2)}
 石灰石：${m1Limestone.toFixed(2)}
+
 二号塔
-SO2:
-NOx:
+二氧化硫:
+氮氧化物:
 烟尘：
-尿素：${m2Urea.toFixed(2)}
-石灰石：${m2Limestone.toFixed(2)}`;
+尿素：${m2Urea.toFixed(2)} t
+石灰石：${m2Limestone.toFixed(2)} t`;
 
             document.getElementById('outputResult').value = templateText;
         }
