@@ -280,13 +280,25 @@
           }
         }, 180);
       }
-      function periodAndDate(now) {
-        const hour = now.getHours();
-        const period = hour < 8 ? '0：00-8：00' : hour < 16 ? '8：00-16：00' : '16：00-次日0：00';
-        const date = `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(2, '0')}月${String(now.getDate()).padStart(2, '0')}日`;
-        return `${date} ${period}`;
-      }
-      function generate() {
+function periodAndDate(now) {
+    const hour = now.getHours();
+    // 复制一份时间用来修改日期（跨天回溯）
+    const targetDate = new Date(now);
+    // 判断是不是晚班
+    const isNightShift = hour >= 20 || hour < 4;
+    // 如果凌晨小于4点，日期往前减一天
+    if (hour < 4) {
+        targetDate.setDate(targetDate.getDate() - 1);
+    }
+    // 班次文本，和你getShiftTime逻辑完全一致
+    const period = isNightShift ? '16:00-次日0:00'
+        : hour >= 4 && hour < 12 ? '0:00-8:00'
+        : '8:00-16:00';
+
+    const date = `${targetDate.getFullYear()}年${String(targetDate.getMonth() + 1).padStart(2, '0')}月${String(targetDate.getDate()).padStart(2, '0')}日`;
+    return `${date} ${period}`;
+}
+       function generate() {
         const result = calculate();
         out.value = [
           periodAndDate(new Date()),
