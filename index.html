@@ -24,6 +24,11 @@
     body { margin: 0; background: var(--canvas); color: var(--ink); }
     button, input, textarea { font: inherit; }
     .page { width: min(100% - 28px, 760px); margin: 0 auto; padding: 24px 0 52px; }
+    .top-actions { display: flex; justify-content: flex-end; margin: 0 0 10px; }
+    .clear-button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: 7px; padding: 0 12px; border: 1px solid #eadbd6; border-radius: 10px; background: #fff; color: #a24e39; cursor: pointer; font-size: 13px; font-weight: 650; -webkit-tap-highlight-color: transparent; }
+    .clear-button:hover { border-color: #dfc4bb; background: #fff8f6; }
+    .clear-button:active { transform: scale(.98); }
+    .clear-button svg { width: 16px; height: 16px; }
     .hero { padding: 8px 2px 22px; }
     .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
     .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #36a77d; box-shadow: 0 0 0 4px #dff1e8; }
@@ -93,11 +98,18 @@
       .field { grid-template-columns: minmax(0, 1fr) 104px; gap: 6px; padding-left: 8px; }
       .field label { font-size: 12px; gap: 5px; }
       .field input { padding: 0 7px; }
+      .page { padding-top: 16px; }
     }
   </style>
 </head>
 <body>
   <main class="page">
+    <div class="top-actions">
+      <button id="clearButton" class="clear-button" type="button" aria-label="一键清除输入和旧模板">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+        一键清除
+      </button>
+    </div>
     <header class="hero">
       <div class="eyebrow">环保运行记录 · 生成工具</div>
       <h1>环保用量计算</h1>
@@ -314,9 +326,19 @@
         feedback.className = 'feedback';
         feedback.textContent = '已复制到剪贴板。';
       }
+      function clearInputs() {
+        for (const input of inputs.values()) input.value = '';
+        out.value = '';
+        document.getElementById('copyButton').disabled = true;
+        feedback.className = 'feedback';
+        feedback.textContent = '输入数据和旧模板已清除。';
+        calculate();
+        save();
+      }
       document.getElementById('factorToggle').addEventListener('change', () => { calculate(); save(); });
       document.getElementById('generateButton').addEventListener('click', generate);
       document.getElementById('copyButton').addEventListener('click', copyTemplate);
+      document.getElementById('clearButton').addEventListener('click', clearInputs);
       out.addEventListener('input', save);
 
       try {
