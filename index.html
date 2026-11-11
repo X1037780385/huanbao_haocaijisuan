@@ -1,247 +1,338 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>环保专业耗量计算器</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 15px;
-            color: #333;
-        }
-        h2 {
-            text-align: center;
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-        .group {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-        }
-        .group-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #34495e;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-        .input-item {
-            margin-bottom: 12px;
-        }
-        .input-item label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 6px;
-            color: #555;
-        }
-        .input-item input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 10px;
-            font-size: 16px; /* 防止iOS自动放大 */
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            appearance: none; /* 移除默认样式 */
-        }
-        .btn {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 6px;
-            margin-top: 10px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,123,255,0.2);
-        }
-        .btn:active {
-            background-color: #0056b3;
-        }
-        .btn-copy {
-            background-color: #28a745;
-            box-shadow: 0 4px 6px rgba(40,167,69,0.2);
-        }
-        .btn-copy:active {
-            background-color: #1e7e34;
-        }
-        textarea {
-            width: 100%;
-            height: 180px;
-            box-sizing: border-box;
-            padding: 10px;
-            font-size: 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            resize: none;
-            line-height: 1.5;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f7f5">
+  <title>电厂环保用量计算</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172b26;
+      --muted: #70817b;
+      --line: #e4ebe7;
+      --paper: #ffffff;
+      --canvas: #f4f7f5;
+      --green: #167b5b;
+      --green-dark: #116447;
+      --green-pale: #e8f5ef;
+      --amber: #b96a20;
+      --shadow: 0 12px 36px rgba(28, 61, 48, .055);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); }
+    button, input, textarea { font: inherit; }
+    .page { width: min(100% - 28px, 760px); margin: 0 auto; padding: 24px 0 52px; }
+    .hero { padding: 8px 2px 22px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+    .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #36a77d; box-shadow: 0 0 0 4px #dff1e8; }
+    h1 { margin: 12px 0 7px; font-size: clamp(25px, 6vw, 32px); line-height: 1.2; letter-spacing: -.035em; }
+    .intro { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+    .save-note { display: inline-flex; gap: 7px; align-items: center; margin-top: 13px; color: #75847e; font-size: 12px; }
+    .save-note svg { width: 15px; height: 15px; color: var(--green); }
+    .card { margin-top: 15px; padding: 19px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 16px; }
+    .section-heading h2 { margin: 0; font-size: 17px; letter-spacing: -.02em; }
+    .count { padding: 5px 9px; border-radius: 99px; background: #f2f6f4; color: #71817a; font-size: 11px; white-space: nowrap; }
+    .group + .group { margin-top: 22px; padding-top: 19px; border-top: 1px solid #edf1ef; }
+    .group-title { display: flex; align-items: center; gap: 9px; margin: 0 0 12px; color: #41554c; font-size: 13px; font-weight: 700; }
+    .group-mark { display: inline-grid; width: 24px; height: 24px; place-items: center; border-radius: 8px; background: var(--green-pale); color: var(--green); font-size: 11px; }
+    .fields { display: grid; grid-template-columns: 1fr; gap: 9px; }
+    .field { display: grid; grid-template-columns: minmax(0, 1fr) 128px; align-items: center; gap: 10px; min-height: 50px; padding: 8px 10px 8px 11px; border: 1px solid #e8eeeb; border-radius: 12px; background: #fbfcfb; transition: border-color .15s, box-shadow .15s, background .15s; }
+    .field:focus-within { border-color: #78b99d; background: #fff; box-shadow: 0 0 0 3px rgba(22, 123, 91, .08); }
+    .field label { display: flex; align-items: baseline; gap: 7px; min-width: 0; font-size: 13px; line-height: 1.4; color: #31443c; }
+    .field-no { flex: 0 0 auto; color: #9aa7a1; font-size: 11px; font-variant-numeric: tabular-nums; }
+    .field input { width: 100%; min-width: 0; height: 36px; padding: 0 10px; border: 1px solid #e1e9e5; border-radius: 9px; outline: none; background: #fff; color: var(--ink); text-align: right; font-size: 16px; font-variant-numeric: tabular-nums; }
+    .field input::placeholder { color: #b4bfba; font-size: 13px; }
+    .field input:focus { border-color: transparent; }
+    .fill-progress { color: #87958f; font-size: 12px; font-weight: 500; }
+    .results-card { padding-bottom: 17px; }
+    .results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .result { min-height: 102px; padding: 14px; border: 1px solid #e7eeea; border-radius: 14px; background: linear-gradient(145deg, #fbfdfc, #f6faf8); }
+    .result.total-result { border-color: #d7e9df; background: linear-gradient(145deg, #eff8f3, #e8f4ed); }
+    .result-label { color: #71817a; font-size: 12px; }
+    .result-value { display: block; overflow-wrap: anywhere; margin-top: 12px; color: var(--green-dark); font-size: clamp(22px, 6vw, 27px); font-weight: 750; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+    .result-unit { margin-left: 4px; color: #82918a; font-size: 12px; font-weight: 500; letter-spacing: 0; }
+    .calc-hint { margin: 12px 1px 0; color: #84928c; font-size: 11px; line-height: 1.55; }
+    .option-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .option-copy strong { display: block; font-size: 14px; }
+    .option-copy span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .switch { position: relative; display: inline-flex; width: 50px; height: 30px; flex: 0 0 auto; }
+    .switch input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .switch-track { width: 50px; height: 30px; padding: 3px; border-radius: 99px; background: #cbd5d0; cursor: pointer; transition: background .18s; }
+    .switch-track::after { content: ""; display: block; width: 24px; height: 24px; border-radius: 50%; background: white; box-shadow: 0 1px 4px rgba(0,0,0,.16); transition: transform .18s; }
+    .switch input:checked + .switch-track { background: var(--green); }
+    .switch input:checked + .switch-track::after { transform: translateX(20px); }
+    .switch input:focus-visible + .switch-track { outline: 3px solid rgba(22,123,91,.2); outline-offset: 2px; }
+    .primary-button, .copy-button { display: inline-flex; width: 100%; min-height: 50px; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: 700; transition: background .15s, transform .08s; -webkit-tap-highlight-color: transparent; }
+    .primary-button { background: var(--green); color: #fff; box-shadow: 0 5px 14px rgba(22, 123, 91, .18); }
+    .primary-button:active, .copy-button:active { transform: scale(.99); }
+    .primary-button:hover { background: var(--green-dark); }
+    .primary-button svg, .copy-button svg { width: 18px; height: 18px; }
+    .template-card { padding-bottom: 15px; }
+    .template-card textarea { display: block; width: 100%; min-height: 204px; resize: vertical; margin-top: 12px; padding: 14px; border: 1px solid #e5ece8; border-radius: 12px; outline: none; background: #f9fbfa; color: #2e4139; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.85; white-space: pre-wrap; }
+    .template-card textarea:focus { border-color: #91c4ad; }
+    .template-card textarea::placeholder { color: #9aa8a1; font-family: inherit; }
+    .copy-button { margin-top: 11px; border: 1px solid #dbe8e1; background: var(--green-pale); color: var(--green-dark); }
+    .copy-button:hover { background: #dbefe5; }
+    .copy-button:disabled { cursor: not-allowed; opacity: .52; }
+    .feedback { min-height: 17px; margin: 9px 2px 0; color: var(--green); font-size: 12px; text-align: center; }
+    .feedback.error { color: #b35432; }
+    .footer { padding: 18px 3px 0; color: #9aa6a0; font-size: 11px; line-height: 1.6; text-align: center; }
+    @media (min-width: 620px) {
+      .page { padding-top: 38px; }
+      .card { padding: 23px; }
+      .fields { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .field { grid-template-columns: minmax(0, 1fr) 112px; }
+      .results { gap: 12px; }
+    }
+    @media (max-width: 360px) {
+      .page { width: min(100% - 20px, 760px); }
+      .card { padding: 15px; border-radius: 15px; }
+      .field { grid-template-columns: minmax(0, 1fr) 104px; gap: 6px; padding-left: 8px; }
+      .field label { font-size: 12px; gap: 5px; }
+      .field input { padding: 0 7px; }
+    }
+  </style>
 </head>
 <body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">环保运行记录 · 生成工具</div>
+      <h1>环保用量计算</h1>
+      <p class="intro">填写运行数据，自动计算两台机组的尿素和石灰石用量，并生成发值长模板。</p>
+      <div class="save-note" role="status" aria-live="polite">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 4h12l3 3v13H4V5a1 1 0 0 1 1-1Z"/><path d="M8 4v6h8V4M8 20v-7h8v7"/></svg>
+        <span id="saveStatus">输入内容自动保存在本机</span>
+      </div>
+    </header>
 
-    <h2>环保专业耗量计算器</h2>
+    <section class="card" aria-labelledby="input-title">
+      <div class="section-heading">
+        <h2 id="input-title">运行数据</h2>
+        <span class="count"><span id="filledCount">0</span> / 20 已填写</span>
+      </div>
+      <div id="fieldGroups"></div>
+    </section>
 
-    <form id="calcForm">
-        <!-- 组别1：石灰石给料 -->
-        <div class="group">
-            <div class="group-title">石灰石给料机流量累计</div>
-            <div class="input-item"><label>1. 给料机A下料前</label><input type="number" id="v1" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>2. 给料机A下料后</label><input type="number" id="v2" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>3. 给料机B下料前</label><input type="number" id="v3" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>4. 给料机B下料后</label><input type="number" id="v4" step="any" inputmode="decimal"></div>
-        </div>
+    <section class="card results-card" aria-labelledby="result-title">
+      <div class="section-heading"><h2 id="result-title">计算结果</h2><span class="count">实时更新</span></div>
+      <div class="results">
+        <div class="result"><span class="result-label">1号机尿素用量</span><strong class="result-value" id="urea1">0.00<span class="result-unit">t</span></strong></div>
+        <div class="result"><span class="result-label">2号机尿素用量</span><strong class="result-value" id="urea2">0.00<span class="result-unit">t</span></strong></div>
+        <div class="result"><span class="result-label">1号机石灰石用量</span><strong class="result-value" id="lime1">0.00<span class="result-unit">t</span></strong></div>
+        <div class="result"><span class="result-label">2号机石灰石用量</span><strong class="result-value" id="lime2">0.00<span class="result-unit">t</span></strong></div>
+        <div class="result total-result"><span class="result-label">尿素总用量</span><strong class="result-value" id="ureaTotal">0.00<span class="result-unit">t</span></strong></div>
+        <div class="result total-result"><span class="result-label">石灰石粉总用量</span><strong class="result-value" id="limeTotal">0.00<span class="result-unit">t</span></strong></div>
+      </div>
+      <p class="calc-hint">结果保留两位小数。空白输入按 0 参与计算。</p>
+    </section>
 
-        <!-- 组别2：吸收塔供浆 -->
-        <div class="group">
-            <div class="group-title">吸收塔供浆流量</div>
-            <div class="input-item"><label>5. 一号塔供浆流量1</label><input type="number" id="v5" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>6. 一号塔供浆流量2</label><input type="number" id="v6" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>7. 二号塔供浆流量1</label><input type="number" id="v7" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>8. 二号塔供浆流量2</label><input type="number" id="v8" step="any" inputmode="decimal"></div>
-        </div>
+    <section class="card" aria-label="石灰石计算选项">
+      <div class="option-row">
+        <div class="option-copy"><strong>是否乘以 1.25</strong><span>关闭后，石灰石用量计算不乘以 1.25</span></div>
+        <label class="switch" aria-label="是否乘以1.25">
+          <input id="factorToggle" type="checkbox" checked>
+          <span class="switch-track"></span>
+        </label>
+      </div>
+    </section>
 
-        <!-- 组别3：尿素储罐液位 -->
-        <div class="group">
-            <div class="group-title">尿素储罐液位</div>
-            <div class="input-item"><label>9. 储罐A使用后</label><input type="number" id="v9" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>10. 储罐A使用前</label><input type="number" id="v10" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>11. 储罐B使用后</label><input type="number" id="v11" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>12. 储罐B使用前</label><input type="number" id="v12" step="any" inputmode="decimal"></div>
-        </div>
+    <section class="card" aria-label="生成模板">
+      <button id="generateButton" class="primary-button" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+        开始生成模板
+      </button>
+    </section>
 
-        <!-- 组别4：脱硝氨气流量 -->
-        <div class="group">
-            <div class="group-title">脱硝氨气流量累计</div>
-            <div class="input-item"><label>13. 1炉A侧流量1</label><input type="number" id="v13" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>14. 1炉A侧流量2</label><input type="number" id="v14" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>15. 1炉B侧流量1</label><input type="number" id="v15" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>16. 1炉B侧流量2</label><input type="number" id="v16" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>17. 2炉A侧流量1</label><input type="number" id="v17" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>18. 2炉A侧流量2</label><input type="number" id="v18" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>19. 2炉B侧流量1</label><input type="number" id="v19" step="any" inputmode="decimal"></div>
-            <div class="input-item"><label>20. 2炉B侧流量2</label><input type="number" id="v20" step="any" inputmode="decimal"></div>
-        </div>
-    </form>
+    <section class="card template-card" aria-labelledby="template-title">
+      <div class="section-heading"><h2 id="template-title">生成的记录</h2><span class="count">可直接复制</span></div>
+      <textarea id="templateOutput" aria-label="生成的记录模板" placeholder="填写 20 项数据后，点击“开始生成模板”"></textarea>
+      <button id="copyButton" class="copy-button" type="button" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+        一键复制
+      </button>
+      <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+    </section>
+    <footer class="footer">数据仅保存在当前浏览器设备中。清除浏览器数据后，本机保存的内容也会被清除。</footer>
+  </main>
 
-    <button type="button" class="btn" onclick="generateTemplate()">开始生成模板</button>
-    
-    <textarea id="outputResult" readonly placeholder="生成的数据模板将显示在这里..."></textarea>
-    
-    <button type="button" class="btn btn-copy" onclick="copyText()">一键复制</button>
+  <script>
+    (() => {
+      const fields = [
+        { n: 1, label: '石灰石给料机 A 下料前流量累计', group: 0 },
+        { n: 2, label: '石灰石给料机 A 下料后流量累计', group: 0 },
+        { n: 3, label: '石灰石给料机 B 下料前流量累计', group: 0 },
+        { n: 4, label: '石灰石给料机 B 下料后流量累计', group: 0 },
+        { n: 5, label: '一号吸收塔供浆流量 1', group: 1 },
+        { n: 6, label: '一号吸收塔供浆流量 2', group: 1 },
+        { n: 7, label: '二号吸收塔供浆流量 1', group: 1 },
+        { n: 8, label: '二号吸收塔供浆流量 2', group: 1 },
+        { n: 9, label: '储罐 A 使用后液位', group: 2 },
+        { n: 10, label: '储罐 A 使用前液位', group: 2 },
+        { n: 11, label: '储罐 B 使用后液位', group: 2 },
+        { n: 12, label: '储罐 B 使用前液位', group: 2 },
+        { n: 13, label: '1 号炉脱硝 A 侧氨气流量累计 1', group: 3 },
+        { n: 14, label: '1 号炉脱硝 A 侧氨气流量累计 2', group: 3 },
+        { n: 15, label: '1 号炉脱硝 B 侧氨气流量累计 1', group: 3 },
+        { n: 16, label: '1 号炉脱硝 B 侧氨气流量累计 2', group: 3 },
+        { n: 17, label: '2 号炉脱硝 A 侧氨气流量累计 1', group: 3 },
+        { n: 18, label: '2 号炉脱硝 A 侧氨气流量累计 2', group: 3 },
+        { n: 19, label: '2 号炉脱硝 B 侧氨气流量累计 1', group: 3 },
+        { n: 20, label: '2 号炉脱硝 B 侧氨气流量累计 2', group: 3 }
+      ];
+      const groupInfo = [
+        ['石灰石给料机', '01'], ['吸收塔供浆流量', '02'], ['储罐液位', '03'], ['锅炉脱硝氨气流量累计', '04']
+      ];
+      const storeKey = 'power-plant-environment-calculator-v1';
+      const groupRoot = document.getElementById('fieldGroups');
+      const inputs = new Map();
+      const feedback = document.getElementById('feedback');
+      const out = document.getElementById('templateOutput');
+      let saveTimer;
 
-    <script>
-        function getValue(id) {
-            let val = parseFloat(document.getElementById(id).value);
-            return isNaN(val) ? 0 : val;
+      groupInfo.forEach(([title, mark], groupIndex) => {
+        const section = document.createElement('section');
+        section.className = 'group';
+        const heading = document.createElement('h3');
+        heading.className = 'group-title';
+        heading.innerHTML = `<span class="group-mark">${mark}</span>${title}`;
+        const grid = document.createElement('div');
+        grid.className = 'fields';
+        fields.filter(item => item.group === groupIndex).forEach(item => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'field';
+          const label = document.createElement('label');
+          label.htmlFor = `value-${item.n}`;
+          label.innerHTML = `<span class="field-no">${item.n}</span><span>${item.label}</span>`;
+          const input = document.createElement('input');
+          input.id = `value-${item.n}`;
+          input.type = 'number';
+          input.inputMode = 'decimal';
+          input.step = 'any';
+          input.autocomplete = 'off';
+          input.placeholder = '请输入数值';
+          input.setAttribute('aria-label', `${item.n}，${item.label}`);
+          input.addEventListener('input', () => { calculate(); save(); });
+          wrapper.append(label, input);
+          grid.append(wrapper);
+          inputs.set(item.n, input);
+        });
+        section.append(heading, grid);
+        groupRoot.append(section);
+      });
+
+      function value(n) {
+        const raw = inputs.get(n).value.trim();
+        if (!raw) return 0;
+        const number = Number(raw);
+        return Number.isFinite(number) ? number : 0;
+      }
+      function diff(a, b) { return Math.abs(value(a) - value(b)); }
+      function fixed(number) { return (Number.isFinite(number) ? number : 0).toFixed(2); }
+      function setResult(id, number) { document.getElementById(id).firstChild.textContent = fixed(number); }
+      function calculate() {
+        const ammonia1 = diff(14, 13) + diff(16, 15);
+        const ammonia2 = diff(18, 17) + diff(20, 19);
+        const ammoniaTotal = ammonia1 + ammonia2;
+        const tankVolume = (diff(10, 9) + diff(12, 11)) * 3.14 * 1.8 * 1.8 * 1.12;
+        const urea1 = ammoniaTotal ? tankVolume * ammonia1 / ammoniaTotal : 0;
+        const urea2 = ammoniaTotal ? tankVolume * ammonia2 / ammoniaTotal : 0;
+        const slurry1 = diff(6, 5);
+        const slurry2 = diff(8, 7);
+        const slurryTotal = slurry1 + slurry2;
+        const multiplier = document.getElementById('factorToggle').checked ? 1.25 : 1;
+        const limestoneTotal = ((diff(1, 2) + diff(3, 4)) / 100) * multiplier;
+        const lime1 = slurryTotal ? limestoneTotal * slurry1 / slurryTotal : 0;
+        const lime2 = slurryTotal ? limestoneTotal * slurry2 / slurryTotal : 0;
+        setResult('urea1', urea1);
+        setResult('urea2', urea2);
+        setResult('lime1', lime1);
+        setResult('lime2', lime2);
+        setResult('ureaTotal', tankVolume);
+        setResult('limeTotal', limestoneTotal);
+        document.getElementById('filledCount').textContent = [...inputs.values()].filter(input => input.value.trim() !== '').length;
+        return { urea1, urea2, lime1, lime2 };
+      }
+      function save() {
+        clearTimeout(saveTimer);
+        document.getElementById('saveStatus').textContent = '正在保存…';
+        saveTimer = setTimeout(() => {
+          try {
+            const values = Object.fromEntries([...inputs].map(([n, input]) => [n, input.value]));
+            localStorage.setItem(storeKey, JSON.stringify({ values, factor: document.getElementById('factorToggle').checked, template: out.value }));
+            document.getElementById('saveStatus').textContent = '输入内容已自动保存在本机';
+          } catch (_) {
+            document.getElementById('saveStatus').textContent = '浏览器未允许本机保存';
+          }
+        }, 180);
+      }
+      function periodAndDate(now) {
+        const hour = now.getHours();
+        const period = hour < 8 ? '0：00-8：00' : hour < 16 ? '8：00-16：00' : '16：00-次日0：00';
+        const date = `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(2, '0')}月${String(now.getDate()).padStart(2, '0')}日`;
+        return `${date} ${period}`;
+      }
+      function generate() {
+        const result = calculate();
+        out.value = [
+          periodAndDate(new Date()),
+          '一号塔',
+          `尿素：${fixed(result.urea1)}t`,
+          `石灰石：${fixed(result.lime1)}t`,
+          '二氧化硫： mg/Nm³',
+          '氮氧化物： mg/Nm³',
+          '烟尘： mg/Nm³',
+          '二号塔：',
+          `尿素：${fixed(result.urea2)}t`,
+          `石灰石：${fixed(result.lime2)}t`,
+          '二氧化硫： mg/Nm³',
+          '氮氧化物： mg/Nm³',
+          '烟尘： mg/Nm³',
+        ].join('\n');
+        document.getElementById('copyButton').disabled = false;
+        feedback.className = 'feedback';
+        feedback.textContent = '模板已生成，可以复制使用。';
+        save();
+        out.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      async function copyTemplate() {
+        if (!out.value) return;
+        try {
+          await navigator.clipboard.writeText(out.value);
+        } catch (_) {
+          out.focus();
+          out.select();
+          const copied = document.execCommand('copy');
+          if (!copied) {
+            feedback.className = 'feedback error';
+            feedback.textContent = '复制失败，请长按文本框手动复制。';
+            return;
+          }
         }
+        feedback.className = 'feedback';
+        feedback.textContent = '已复制到剪贴板。';
+      }
+      document.getElementById('factorToggle').addEventListener('change', () => { calculate(); save(); });
+      document.getElementById('generateButton').addEventListener('click', generate);
+      document.getElementById('copyButton').addEventListener('click', copyTemplate);
+      out.addEventListener('input', save);
 
-        function getShiftTime() {
-            let now = new Date();
-            let hour = now.getHours();
-            let targetDate = new Date(now);
-            let shiftStr = "";
-
-            // 判断班次时间区间
-            if (hour >= 20 || hour < 4) {
-                shiftStr = "16:00-次日0:00";
-                // 如果是凌晨，算作前一天的晚班
-                if (hour < 4) {
-                    targetDate.setDate(targetDate.getDate() - 1);
-                }
-            } else if (hour >= 4 && hour < 12) {
-                shiftStr = "0:00-8:00";
-            } else {
-                shiftStr = "8:00-16:00";
-            }
-
-            let y = targetDate.getFullYear();
-            let m = String(targetDate.getMonth() + 1).padStart(2, '0');
-            let d = String(targetDate.getDate()).padStart(2, '0');
-
-            return `${y}年${m}月${d}日 ${shiftStr}`;
+      try {
+        const saved = JSON.parse(localStorage.getItem(storeKey) || 'null');
+        if (saved?.values) {
+          for (const [n, input] of inputs) input.value = saved.values[n] ?? '';
+          if (typeof saved.factor === 'boolean') document.getElementById('factorToggle').checked = saved.factor;
+          if (typeof saved.template === 'string') out.value = saved.template;
+          if (out.value) document.getElementById('copyButton').disabled = false;
+          document.getElementById('saveStatus').textContent = '已恢复上次填写的数据';
         }
-
-        function generateTemplate() {
-            // 获取所有20个值
-            let v = [];
-            for (let i = 1; i <= 20; i++) {
-                v[i] = getValue('v' + i);
-            }
-
-            // 尿素计算部分
-            let ureaBaseVol = (((Math.abs(v[10] - v[9]) + Math.abs(v[12] - v[11]))/1000) * 3.14 * 1.8 * 1.8 * 1.12) / 2;
-            let m1Ammonia = Math.abs(v[14] - v[13]) + Math.abs(v[16] - v[15]);
-            let m2Ammonia = Math.abs(v[18] - v[17]) + Math.abs(v[20] - v[19]);
-            let totalAmmonia = m1Ammonia + m2Ammonia;
-            
-            // 防止除以0导致NaN错误
-            let m1Urea = totalAmmonia === 0 ? 0 : ureaBaseVol * (m1Ammonia / totalAmmonia);
-            let m2Urea = totalAmmonia === 0 ? 0 : ureaBaseVol * (m2Ammonia / totalAmmonia);
-
-            // 石灰石计算部分
-            let limestoneBase = ((Math.abs(v[1] - v[2]) + Math.abs(v[3] - v[4])) / 100) * 1.25;
-            let m1Slurry = Math.abs(v[6] - v[5]);
-            let m2Slurry = Math.abs(v[8] - v[7]);
-            let totalSlurry = m1Slurry + m2Slurry;
-
-            let m1Limestone = totalSlurry === 0 ? 0 : limestoneBase * (m1Slurry / totalSlurry);
-            let m2Limestone = totalSlurry === 0 ? 0 : limestoneBase * (m2Slurry / totalSlurry);
-
-            // 格式化输出文本 (保留两位小数)
-            let timeHeader = getShiftTime();
-            let templateText = `${timeHeader}
-#1机
-二氧化硫:  mg/Nm³
-氮氧化物:  mg/Nm³
-烟尘：  mg/Nm³
-尿素：${m1Urea.toFixed(2)} t
-石灰石：${m1Limestone.toFixed(2)} t
-#2机
-二氧化硫:  mg/Nm³
-氮氧化物:  mg/Nm³
-烟尘：  mg/Nm³
-尿素：${m2Urea.toFixed(2)} t
-石灰石：${m2Limestone.toFixed(2)} t`;
-
-            document.getElementById('outputResult').value = templateText;
-        }
-
-        function copyText() {
-            let textarea = document.getElementById('outputResult');
-            if (!textarea.value) {
-                alert("请先生成模板！");
-                return;
-            }
-            // 复制逻辑
-            textarea.select();
-            textarea.setSelectionRange(0, 99999); // 适配手机端
-            
-            try {
-                navigator.clipboard.writeText(textarea.value).then(() => {
-                    alert("复制成功！可以直接粘贴发送了。");
-                }).catch(err => {
-                    fallbackCopyTextCommand(textarea);
-                });
-            } catch(e) {
-                fallbackCopyTextCommand(textarea);
-            }
-        }
-
-        function fallbackCopyTextCommand(textarea) {
-            document.execCommand('copy');
-            alert("复制成功！可以直接粘贴发送了。");
-        }
-    </script>
+      } catch (_) {
+        document.getElementById('saveStatus').textContent = '输入内容自动保存在本机';
+      }
+      calculate();
+    })();
+  </script>
 </body>
 </html>
