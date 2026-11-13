@@ -180,7 +180,7 @@
             }
 
             // 尿素计算部分
-            let ureaBaseVol = (((Math.abs(v[10] - v[9]) + Math.abs((v[12] - v[11])/1000) * 3.14 * 1.8 * 1.8 * 1.12) / 2;
+            let ureaBaseVol = ((((Math.abs(v[10] - v[9]) + Math.abs(v[12] - v[11]))/1000) * 3.14 * 1.8 * 1.8 * 1.12) / 2;
             let m1Ammonia = Math.abs(v[14] - v[13]) + Math.abs(v[16] - v[15]);
             let m2Ammonia = Math.abs(v[18] - v[17]) + Math.abs(v[20] - v[19]);
             let totalAmmonia = m1Ammonia + m2Ammonia;
