@@ -248,7 +248,7 @@
         const ammonia1 = diff(14, 13) + diff(16, 15);
         const ammonia2 = diff(18, 17) + diff(20, 19);
         const ammoniaTotal = ammonia1 + ammonia2;
-        const tankVolume = ((diff(10, 9) + diff(12, 11))/1000) * 3.14 * 1.8 * 1.8 * 1.12;
+        const tankVolume = (((diff(10, 9) + diff(12, 11))/1000) * 3.14 * 1.8 * 1.8 * 1.12)/2;
         const urea1 = ammoniaTotal ? tankVolume * ammonia1 / ammoniaTotal : 0;
         const urea2 = ammoniaTotal ? tankVolume * ammonia2 / ammoniaTotal : 0;
         const slurry1 = diff(6, 5);
